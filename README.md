@@ -270,13 +270,7 @@ node quadrantembed.js
 Clone the project
 
 ```bash
-  git clone https://github.com/bayesianinstitute/GPT-Clone.git
-```
-
-### Checkout Branch
-
-```bash
-   git checkout lawyer_with_rag
+  git clone https://github.com/IDEAS-Incubator/Lawyer_with_RAG.git
 ```
 
 ## To Start BackEnd
@@ -284,7 +278,7 @@ Clone the project
 Go to the server directory
 
 ```bash
-  cd ChatGPT/server
+  cd Bayes_GPT/server
 ```
 
 Install dependencies
@@ -296,7 +290,7 @@ Install dependencies
 Start
 
 ```bash
-  npm start
+  npm run start
 ```
 
 ## To Start FrontEnd
@@ -304,7 +298,7 @@ Start
 #### Go to the client directory
 
 ```bash
-  cd ChatGPT/client
+  cd Bayes_GPT/client
 ```
 
 #### Install dependencies
