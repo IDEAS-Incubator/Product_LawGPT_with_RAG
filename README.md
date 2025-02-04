@@ -259,6 +259,8 @@ With this setup, you'll be able to integrate Qdrant with Ollama and other machin
 cd server/
 ```
 
+Make sure you have the data folder
+
 ```bash
 node quadrantembed.js
 ```
