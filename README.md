@@ -1,6 +1,4 @@
-# Lawgpt
-
-BayesGPT that use LLM to generated Text
+# Product LawGPT with RAG
 
 ## Features
 
@@ -172,7 +170,7 @@ To run this project, you will need to add the following environment variables to
 
 `CC_EMAIL`
 
-`LLAMA_MODEL=tinyllama:latest`
+`LLAMA_MODEL=llama3.2:latest`
 
 To run this project, you will need to add the following environment variables to your .env.local file in client directory
 
@@ -227,7 +225,7 @@ Once Ollama is installed, choose a language model from the Ollama library:
 To pull the "tinyllama" model, use the following command:
 
 ```bash
-ollama run tinyllama
+ollama run llama3.2
 ```
 
 ### 3. Text Embedding Model:
