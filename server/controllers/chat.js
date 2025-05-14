@@ -2,6 +2,7 @@ import chat from "../helpers/chat.js";
 import { sendErrorEmail } from "../mail/send.js";
 import { ObjectId } from "mongodb";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import OpenAI from 'openai';
 import ollama from 'ollama';
 import {
   createSendingErrorMessage,
@@ -13,9 +14,15 @@ import { formatHistory } from "../utility/feature.js";
 import 'dotenv/config'; // or require('dotenv').config() if using CommonJS
 
 const QDRANT_COLLECTION = "docslaw";  // Replace with your actual Qdrant collection name
-const LLAMA_MODEL = process.env.LLAMA_MODEL || 'llama2:latest'; // fallback to llama2:latest if not set
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-3.5-turbo';
+const OPENAI_EMBEDDING_MODEL = 'text-embedding-ada-002';
 
-// Function to generate embeddings using the Ollama API
+// Initialize OpenAI client
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+// Function to generate embeddings using Ollama API
 async function getEmbedding(text) {
     try {
         const response = await ollama.embeddings({
@@ -62,8 +69,8 @@ Question: Is this question related to immigration law?
 
 Remember: Only respond with {"results": "yes"} or {"results": "no"}. Nothing else.`;
 
-        const response = await ollama.chat({
-            model: LLAMA_MODEL,
+        const response = await openai.chat.completions.create({
+            model: OPENAI_MODEL,
             messages: [
                 { 
                     role: "system", 
@@ -71,13 +78,10 @@ Remember: Only respond with {"results": "yes"} or {"results": "no"}. Nothing els
                 },
                 { role: "user", content: structuredPrompt }
             ],
-            options: {
-                num_gpu: 0,  // Force CPU usage
-                temperature: 0.1  // Lower temperature for more consistent responses
-            }
+            temperature: 0.1
         });
         
-        const responseContent = response.message.content.trim();
+        const responseContent = response.choices[0].message.content.trim();
         
         // Try to extract JSON if it's embedded in other text
         const jsonMatch = responseContent.match(/\{.*\}/);
@@ -142,18 +146,15 @@ async function handleLlmResponse(promptTemplate, modelType) {
     const systemMessage = "You are a helpful assistant that handles user queries and provides only the answer to the user's question.";
 
     try {
-        const response = await ollama.chat({
-            model: LLAMA_MODEL,
+        const response = await openai.chat.completions.create({
+            model: OPENAI_MODEL,
             messages: [
                 { role: "system", content: systemMessage },
                 { role: "user", content: promptTemplate }
-            ],
-            options: {
-                num_gpu: 0  // Force CPU usage
-            }
+            ]
         });
 
-        return response.message.content;
+        return response.choices[0].message.content;
 
     } catch (error) {
         console.error(`An error occurred during LLM response handling: ${error.message}`);
@@ -205,15 +206,12 @@ async function handleLlmResponseAddChat(promptTemplate, history, modelType) {
             { role: "user", content: promptTemplate }
         ];
 
-        const response = await ollama.chat({
-            model: LLAMA_MODEL,
-            messages: messages,
-            options: {
-                num_gpu: 0  // Force CPU usage
-            }
+        const response = await openai.chat.completions.create({
+            model: OPENAI_MODEL,
+            messages: messages
         });
 
-        return response.message.content;
+        return response.choices[0].message.content;
 
     } catch (error) {
         console.error(`An error occurred during LLM response handling: ${error.message}`);
